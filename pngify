@@ -24,9 +24,8 @@
 ##
 
 ## Configuration
-scalevalues="1 2 3"
+scalevalues=(1 1.5 2 3)
 dpi=72
-
 
 ## Function to convert a PDF to PNGs in each scale
 function convertPdfToPngs {
@@ -35,27 +34,36 @@ function convertPdfToPngs {
 
     echo "Processing: $pdffile"
 
-    path=$(dirname ${pdffile})
     filename=$(basename "$pdffile")
     basename="${filename%.*}"
 
     ## for each scale value 
-    for scale in $scalevalues; do
+    for scale in ${scalevalues[@]}; do
 	
 	## scalestr like "@2x" and "@3x"
 	scalestr="";
-	if [ $scale -gt 1 ]; then
-	    scalestr="@${scale}x"
+	if [ $scale = "1" ]; then
+	    scalestr="mdpi"
+	elif [ $scale = "1.5" ]; then
+	    scalestr="hdpi"
+	elif [ $scale = "2" ]; then
+	    scalestr="xhdpi"
+	elif [ $scale = "3" ]; then
+	    scalestr="xxhdpi"
+	elif [ $scale = "4" ]; then
+	    scalestr="xxxhdpi"
 	fi
 
 	## density value like 72, 144, 216
-	density=$(($dpi*$scale));
-
-	pngfile="$path/$basename$scalestr.png"
+	density=$(expr $dpi*$scale | bc);
+	
+	destdir="drawable-$scalestr"
+	mkdir -p "$destdir"
+	pngfile="$destdir/$basename.png"
 	echo "Creating: $pngfile"
 
 	## convert -density 144 image.pdf image@2x.png	
-   	convert -density $density $pdffile $pngfile
+   	convert -density $density "$pdffile" "$pngfile"
     done
 }
 
@@ -64,7 +72,7 @@ function convertPdfToPngs {
 ## Command line arguments
 filesAndDirs=$@
 if [ "$filesAndDirs" == "" ]; then
-    scriptname=$(basename "$0") 
+    scriptname=$(basename "$0")
     echo "Usage: $scriptname <pdf filenames or directories with pdf files>"
     echo "WARNING: Script will overwrite existing .png images if they exist"
     exit -1;
