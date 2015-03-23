@@ -36,6 +36,7 @@ function convertPdfToPngs {
 
     filename=$(basename "$pdffile")
     basename="${filename%.*}"
+    basename=$(echo $basename | sed -e 's/[^[:alnum:]_\.]/_/g')
 
     ## for each scale value 
     for scale in ${scalevalues[@]}; do
