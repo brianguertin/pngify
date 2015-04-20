@@ -64,7 +64,7 @@ function convertPdfToPngs {
 	echo "Creating: $pngfile"
 
 	## convert -density 144 image.pdf image@2x.png	
-   	convert -density $density "$pdffile" "$pngfile"
+   	convert -background none -density $density "$pdffile" "$pngfile"
     done
 }
 
@@ -74,13 +74,13 @@ function convertPdfToPngs {
 filesAndDirs=$@
 if [ "$filesAndDirs" == "" ]; then
     scriptname=$(basename "$0")
-    echo "Usage: $scriptname <pdf filenames or directories with pdf files>"
+    echo "Usage: $scriptname <filenames or directories with pdf/svg files>"
     echo "WARNING: Script will overwrite existing .png images if they exist"
     exit -1;
 fi
 
 ## Find PDFs and process each
-for pdffile in `find $filesAndDirs -name "*.[p,P][d,D][f,F]"`; do
+for pdffile in `find $filesAndDirs -iname "*\.pdf" -o -iname "*\.svg"`; do
     convertPdfToPngs $pdffile
 done
 
