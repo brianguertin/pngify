@@ -24,7 +24,7 @@
 ##
 
 ## Configuration
-scalevalues=(1 1.5 2 3)
+scalevalues=(1 1.5 2 3 4)
 dpi=72
 
 ## Function to convert a PDF to PNGs in each scale
